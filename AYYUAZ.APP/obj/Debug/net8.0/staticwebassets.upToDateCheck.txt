@@ -1,0 +1,8 @@
+wwwroot\uploads\categories\76bf6e5f-d7c3-4af9-9814-f84dc48d9881.jpeg
+wwwroot\uploads\categories\default-category.svg
+wwwroot\uploads\categories\default-category.txt
+wwwroot\uploads\products\0d449f63-f75c-4c3c-bf84-63608a7fe405.jpeg
+wwwroot\uploads\products\41cd91a0-d483-4889-be65-8b995890d74a.jpeg
+wwwroot\uploads\products\default-product.svg
+wwwroot\uploads\products\default-product.txt
+wwwroot\uploads\products\f0f6aadf-b6d5-408f-8d8a-31d6ce0c388e.jpeg

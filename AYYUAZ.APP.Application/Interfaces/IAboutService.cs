@@ -1,0 +1,34 @@
+using AYYUAZ.APP.Application.Dtos;
+using AYYUAZ.APP.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AYYUAZ.APP.Application.Interfaces
+{
+    public interface IAboutService
+    {
+        // Basic CRUD operations
+        Task<IEnumerable<AboutDto>> GetAllAboutAsync();
+        Task<AboutDto> GetAboutByIdAsync(int aboutId);
+        Task<AboutDto> CreateAboutAsync(CreateAboutDto createAboutDto);
+        Task<AboutDto> UpdateAboutAsync(UpdateAboutDto updateAboutDto);
+        Task<bool> DeleteAboutAsync(int aboutId);
+
+        // About specific operations
+        Task<AboutDto> GetLatestAboutAsync();
+        Task<AboutDto> GetAboutByTitleAsync(string title);
+        Task<IEnumerable<AboutDto>> SearchAboutByTitleAsync(string searchTerm);
+        
+        // Content management
+        Task<bool> IsTitleUniqueAsync(string title);
+        Task<bool> IsTitleUniqueAsync(string title, int excludeId);
+        
+        // Pagination
+        Task<IEnumerable<AboutDto>> GetAboutWithPaginationAsync(int page, int pageSize);
+        Task<int> GetAboutCountAsync();
+       
+    }
+}
