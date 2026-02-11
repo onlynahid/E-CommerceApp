@@ -13,18 +13,15 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
     public class CategoryRepository : ICategoryRepository
     {
         private readonly AppDbContext _context;
-
         public CategoryRepository(AppDbContext context)
         {
             _context = context;
         }
-
         public async Task AddAsync(Category category)
         {
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
         }
-
         public async Task DeleteAsync(int categoryId)
         {
             var category = await _context.Categories.FindAsync(categoryId);
@@ -34,37 +31,31 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
             return await _context.Categories.ToListAsync();
         }
-
         public async Task<Category> GetByIdAsync(int categoryId)
         {
             return await _context.Categories.FirstOrDefaultAsync(c => c.Id == categoryId);
         }
-
         public async Task UpdateAsync(Category category)
         {
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
         }
-
         public async Task<IEnumerable<Category>> GetAllWithProductsAsync()
         {
             return await _context.Categories
                 .Include(c => c.Products)
                 .ToListAsync();
         }
-
         public async Task<Category> GetByIdWithProductsAsync(int categoryId)
         {
             return await _context.Categories
                 .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Id == categoryId);
         }
-
         public async Task<IEnumerable<Category>> SearchByNameAsync(string searchTerm)
         {
             return await _context.Categories
@@ -73,7 +64,6 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
                            c.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                 .ToListAsync();
         }
-
         public async Task<IEnumerable<Category>> GetWithPaginationAsync(int page, int pageSize)
         {
             return await _context.Categories
@@ -83,24 +73,20 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
-
         public async Task<int> GetCountAsync()
         {
             return await _context.Categories.CountAsync();
         }
-
         public async Task<bool> ExistsByNameAsync(string categoryName)
         {
             return await _context.Categories
                 .AnyAsync(c => c.Name.ToLower() == categoryName.ToLower());
         }
-
         public async Task<bool> ExistsByNameExcludingIdAsync(string categoryName, int excludeId)
         {
             return await _context.Categories
                 .AnyAsync(c => c.Name.ToLower() == categoryName.ToLower() && c.Id != excludeId);
         }
-
         public async Task<IEnumerable<Category>> GetPopularAsync(int count)
         {
             return await _context.Categories

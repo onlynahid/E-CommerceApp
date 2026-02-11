@@ -3,7 +3,6 @@ using AYYUAZ.APP.Application.Interfaces;
 using AYYUAZ.APP.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace AYYUAZ.APP.Controllers
 {
     [ApiController]
@@ -11,19 +10,16 @@ namespace AYYUAZ.APP.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
-
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategories()
         {
             var categories = await _categoryService.GetAllCategoriesAsync();
             return Ok(categories);
         }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryById(int id)
         {
@@ -34,87 +30,12 @@ namespace AYYUAZ.APP.Controllers
             }
             return Ok(category);
         }
-
-        [HttpPost]
-        [Authorize(Roles ="Admin")]
-        public async Task<ActionResult<CategoryDto>> CreateCategory([FromForm] CreateCategoryDto createCategoryDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                // Check if category name is unique
-                if (!await _categoryService.IsCategoryNameUniqueAsync(createCategoryDto.Name))
-                {
-                    return BadRequest(new { message = "Category name already exists." });
-                }
-
-                var category = await _categoryService.CreateCategoryAsync(createCategoryDto);
-                return CreatedAtAction(nameof(GetCategoryById), new { id = category.Id }, category);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<CategoryDto>> UpdateCategory(int id, [FromForm] UpdateCategoryDto updateCategoryDto)
-        {
-            if (id != updateCategoryDto.Id)
-            {
-                return BadRequest("Category ID mismatch.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                // Check if category name is unique (excluding current category)
-                if (!await _categoryService.IsCategoryNameUniqueAsync(updateCategoryDto.Name, id))
-                {
-                    return BadRequest(new { message = "Category name already exists." });
-                }
-
-                var category = await _categoryService.UpdateCategoryAsync(updateCategoryDto);
-                if (category == null)
-                {
-                    return NotFound($"Category with ID {id} not found.");
-                }
-                return Ok(category);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> DeleteCategory(int id)
-        {
-            var result = await _categoryService.DeleteCategoryAsync(id);
-            if (!result)
-            {
-                return NotFound($"Category with ID {id} not found.");
-            }
-            return NoContent();
-        }
-
         [HttpGet("with-products")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategoriesWithProducts()
         {
             var categories = await _categoryService.GetCategoriesWithProductsAsync();
             return Ok(categories);
         }
-
         [HttpGet("{id}/with-products")]
         public async Task<ActionResult<CategoryDto>> GetCategoryWithProducts(int id)
         {
@@ -125,7 +46,6 @@ namespace AYYUAZ.APP.Controllers
             }
             return Ok(category);
         }
-
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> SearchCategories([FromQuery] string searchTerm)
         {
@@ -137,7 +57,6 @@ namespace AYYUAZ.APP.Controllers
             var categories = await _categoryService.SearchCategoriesByNameAsync(searchTerm);
             return Ok(categories);
         }
-
         [HttpGet("paged")]
         public async Task<ActionResult<object>> GetCategoriesWithPagination([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
@@ -158,33 +77,6 @@ namespace AYYUAZ.APP.Controllers
                 totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
             });
         }
-
-        [HttpGet("count")]
-        public async Task<ActionResult<int>> GetCategoryCount()
-        {
-            var count = await _categoryService.GetCategoryCountAsync();
-            return Ok(count);
-        }
-
-        [HttpGet("check-name")]
-        public async Task<ActionResult<bool>> CheckCategoryNameUnique([FromQuery] string name, [FromQuery] int? excludeId = null)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                return BadRequest("Category name cannot be empty.");
-            }
-
-            bool isUnique;
-            if (excludeId.HasValue)
-            {
-                isUnique = await _categoryService.IsCategoryNameUniqueAsync(name, excludeId.Value);
-            }
-            else
-            {
-                isUnique = await _categoryService.IsCategoryNameUniqueAsync(name);
-            }
-
-            return Ok(new { name, isUnique });
-        }
+    
     }
 }

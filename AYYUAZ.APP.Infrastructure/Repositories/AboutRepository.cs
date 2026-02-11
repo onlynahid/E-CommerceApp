@@ -13,7 +13,6 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
     public class AboutRepository : IAboutRepository
     {
         private readonly AppDbContext _context;
-
         public AboutRepository(AppDbContext context)
         {
             _context = context;
@@ -32,25 +31,21 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
-        public Task<About> GetAboutByIdAsync(int id)
+        public async Task<About> GetAboutByIdAsync(int id)
         {
-            var about =  _context.About.FirstOrDefaultAsync(a => a.Id == id);
+            var about =  await  _context.About.FirstOrDefaultAsync(a => a.Id == id);
             return about;
         }
-
         public async Task<List<About>> GetAllAboutAsync()
         {
           return await _context.About.ToListAsync(); 
         }
-
         public async Task<About?> GetByTitleAsync(string title)
         {
             return await _context.About
           .FirstOrDefaultAsync(a => a.Title.ToLower() == title.ToLower());
 
         }
-
         public async Task UpdateAboutAsync(About about)
         {
             _context.About.Update(about);

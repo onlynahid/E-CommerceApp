@@ -10,12 +10,10 @@ namespace AYYUAZ.APP.Controllers
     public class FileStorageController : ControllerBase
     {
         private readonly IFileStorageService _fileStorageService;
-
         public FileStorageController(IFileStorageService fileStorageService)
         {
             _fileStorageService = fileStorageService;
         }
-
         /// <summary>
         /// Upload a single image file
         /// </summary>
@@ -36,25 +34,18 @@ namespace AYYUAZ.APP.Controllers
                 return BadRequest(new { message = "Only image files are allowed." });
             }
 
-            try
-            {
-                var folder = string.IsNullOrEmpty(request.Folder) ? "products" : request.Folder;
-                var imageUrl = await _fileStorageService.UploadImageAsync(request.File, folder);
-                
-                return Ok(new 
-                { 
-                    success = true,
-                    message = "File uploaded successfully.",
-                    imageUrl,
-                    fileName = request.File.FileName,
-                    contentType = request.File.ContentType,
-                    size = request.File.Length
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var folder = string.IsNullOrEmpty(request.Folder) ? "products" : request.Folder;
+            var imageUrl = await _fileStorageService.UploadImageAsync(request.File, folder);
+            
+            return Ok(new 
+            { 
+                success = true,
+                message = "File uploaded successfully.",
+                imageUrl,
+                fileName = request.File.FileName,
+                contentType = request.File.ContentType,
+                size = request.File.Length
+            });
         }
 
         /// <summary>
@@ -90,22 +81,15 @@ namespace AYYUAZ.APP.Controllers
                     continue;
                 }
 
-                try
+                var imageUrl = await _fileStorageService.UploadImageAsync(file, folder);
+                uploadResults.Add(new
                 {
-                    var imageUrl = await _fileStorageService.UploadImageAsync(file, folder);
-                    uploadResults.Add(new
-                    {
-                        fileName = file.FileName,
-                        imageUrl,
-                        contentType = file.ContentType,
-                        size = file.Length,
-                        success = true
-                    });
-                }
-                catch (Exception ex)
-                {
-                    errors.Add($"Error uploading {file.FileName}: {ex.Message}");
-                }
+                    fileName = file.FileName,
+                    imageUrl,
+                    contentType = file.ContentType,
+                    size = file.Length,
+                    success = true
+                });
             }
 
             return Ok(new
@@ -131,32 +115,25 @@ namespace AYYUAZ.APP.Controllers
                 return BadRequest(new { message = "Image URL is required." });
             }
 
-            try
+            var result = await _fileStorageService.DeleteImageAsync(imageUrl);
+            
+            if (result)
             {
-                var result = await _fileStorageService.DeleteImageAsync(imageUrl);
-                
-                if (result)
-                {
-                    return Ok(new 
-                    { 
-                        success = true,
-                        message = "File deleted successfully.",
-                        imageUrl 
-                    });
-                }
-                else
-                {
-                    return NotFound(new 
-                    { 
-                        success = false,
-                        message = "File not found or could not be deleted.",
-                        imageUrl 
-                    });
-                }
+                return Ok(new 
+                { 
+                    success = true,
+                    message = "File deleted successfully.",
+                    imageUrl 
+                });
             }
-            catch (Exception ex)
+            else
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new 
+                { 
+                    success = false,
+                    message = "File not found or could not be deleted.",
+                    imageUrl 
+                });
             }
         }
 

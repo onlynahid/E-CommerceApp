@@ -2,7 +2,7 @@ using AYYUAZ.APP.Application.Dtos;
 using System.Security.Claims;
 namespace AYYUAZ.APP.Application.Interfaces
 {
-    public interface IAuthService
+    public interface IAuthService 
     {
         Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
         Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto);

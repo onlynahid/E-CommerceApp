@@ -1,5 +1,7 @@
 using AYYUAZ.APP.Application.Interfaces;
+using AYYUAZ.APP.Application.Service;
 using AYYUAZ.APP.Application.Services;
+using AYYUAZ.APP.Domain.Entities;
 using AYYUAZ.APP.Domain.Interfaces;
 using AYYUAZ.APP.Infrastructure.Data;
 using AYYUAZ.APP.Infrastructure.Repositories;
@@ -9,10 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Reflection;
-using AYYUAZ.APP.Domain.Entities;
-
+using System.Text;
 namespace AYYUAZ.APP
 {
     public class Program
@@ -29,9 +29,9 @@ namespace AYYUAZ.APP
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo 
-                { 
-                    Title = "AYYUAZ.APP API", 
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "AYYUAZ.APP API",
                     Version = "v1",
                     Description = "API for AYYUAZ Application"
                 });
@@ -83,17 +83,17 @@ namespace AYYUAZ.APP
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
                 options.UseSqlServer(connectionString);
             });
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowAll", policy =>
-            //    {
-            //        policy
-            //            .WithOrigins("http://localhost:3000", "https://localhost:3000")
-            //            .AllowAnyHeader()
-            //            .AllowAnyMethod()
-            //            .AllowCredentials();
-            //    });
-            //});
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:3000","https://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            });
 
             // Add Identity services
             builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -137,7 +137,9 @@ namespace AYYUAZ.APP
                     ValidAudience = jwtAudience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
+
                 };
+
 
                 // Add comprehensive debugging events for JWT authentication
                 options.Events = new JwtBearerEvents
@@ -146,7 +148,7 @@ namespace AYYUAZ.APP
                     {
                         var logger = context.HttpContext.RequestServices.GetService<ILogger<Program>>();
                         var authHeader = context.Request.Headers["Authorization"].ToString();
-                        logger?.LogDebug("JWT OnMessageReceived - Auth Header: {AuthHeader}", 
+                        logger?.LogDebug("JWT OnMessageReceived - Auth Header: {AuthHeader}",
                             string.IsNullOrEmpty(authHeader) ? "MISSING" : authHeader.Substring(0, Math.Min(authHeader.Length, 50)) + "...");
                         return Task.CompletedTask;
                     },
@@ -155,7 +157,7 @@ namespace AYYUAZ.APP
                         var logger = context.HttpContext.RequestServices.GetService<ILogger<Program>>();
                         var claims = context.Principal?.Claims?.ToList() ?? new List<System.Security.Claims.Claim>();
                         logger?.LogDebug("JWT Token validated successfully. Claims count: {ClaimsCount}", claims.Count);
-                        
+
                         foreach (var claim in claims)
                         {
                             logger?.LogDebug("JWT Claim: {Type} = {Value}", claim.Type, claim.Value);
@@ -171,7 +173,7 @@ namespace AYYUAZ.APP
                     OnChallenge = context =>
                     {
                         var logger = context.HttpContext.RequestServices.GetService<ILogger<Program>>();
-                        logger?.LogWarning("JWT Challenge triggered: {Error}, {ErrorDescription}", 
+                        logger?.LogWarning("JWT Challenge triggered: {Error}, {ErrorDescription}",
                             context.Error, context.ErrorDescription);
                         return Task.CompletedTask;
                     }
@@ -185,6 +187,8 @@ namespace AYYUAZ.APP
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IAboutRepository, AboutRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IHeroRepository, HeroRepository>();
+
 
             // Service registrations
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
@@ -195,7 +199,15 @@ namespace AYYUAZ.APP
             builder.Services.AddScoped<IAboutService, AboutService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
-            builder.Services.AddScoped<IBasketService, BasketService>();
+            //builder.Services.AddScoped<IBasketService, BasketService>();
+            builder.Services.AddScoped<IHeroService, HeroService>();
+            builder.Services.AddScoped<GlobalExceptionFilter>();
+
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<GlobalExceptionFilter>();
+
+            });
 
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             if (string.IsNullOrEmpty(connectionString))
@@ -218,7 +230,7 @@ namespace AYYUAZ.APP
             }
 
             app.UseHttpsRedirection();
-            //app.UseCors("AllowAll");
+            app.UseCors("AllowAll");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();
@@ -257,13 +269,13 @@ namespace AYYUAZ.APP
                 {
                     var context = services.GetRequiredService<AppDbContext>();
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    
+
                     // Ensure database is created
                     context.Database.EnsureCreated();
-                    
+
                     // Seed initial data with service provider - await the async call
                     await DataSeeder.SeedInitialData(context, services);
-                    
+
                     logger.LogInformation("Database initialized and seeded successfully.");
                 }
                 catch (Exception ex)
@@ -290,7 +302,6 @@ namespace AYYUAZ.APP
                 CreatePlaceholderImage(categoryImagePath, "Category");
             }
         }
-
         private static void CreatePlaceholderImage(string filePath, string text)
         {
             // Create a simple SVG placeholder that browsers can display

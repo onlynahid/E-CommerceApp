@@ -24,7 +24,6 @@ namespace AYYUAZ.APP.Domain.Entities
         public DateTime? AcceptedAt { get; set; }
         public DateTime? RejectedAt { get; set; }
         public string? RejectedReason { get; set; }
-
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public Order()
         {

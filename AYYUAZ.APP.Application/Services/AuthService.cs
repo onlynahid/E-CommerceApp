@@ -13,7 +13,6 @@ namespace AYYUAZ.APP.Application.Services
         private readonly UserManager<User> _userManager;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
-
         public AuthService(
             UserManager<User> userManager,
             IJwtService jwtService,
@@ -23,7 +22,6 @@ namespace AYYUAZ.APP.Application.Services
             _jwtService = jwtService;
             _logger = logger;
         }
-
         public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
         {
             try
@@ -106,7 +104,6 @@ namespace AYYUAZ.APP.Application.Services
                 };
             }
         }
-
         public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
         {
             try
@@ -214,7 +211,6 @@ namespace AYYUAZ.APP.Application.Services
                 };
             }
         }
-
         public async Task<bool> ValidateTokenAsync(string token)
         {
             try
@@ -239,7 +235,6 @@ namespace AYYUAZ.APP.Application.Services
                 return false;
             }
         }
-
         public async Task<ClaimsPrincipal?> GetPrincipalFromTokenAsync(string token)
         {
             try
@@ -263,7 +258,6 @@ namespace AYYUAZ.APP.Application.Services
                 return null;
             }
         }
-
         public async Task<TokenDto> GenerateTokenAsync(string userId)
         {
             try
@@ -286,7 +280,6 @@ namespace AYYUAZ.APP.Application.Services
                 throw;
             }
         }
-
         public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordDto changePasswordDto)
         {
             try
@@ -314,7 +307,6 @@ namespace AYYUAZ.APP.Application.Services
                 return false;
             }
         }
-
         public async Task<bool> ChangeEmailAsync(string userId, ChangeEmailDto changeEmailDto)
         {
             try

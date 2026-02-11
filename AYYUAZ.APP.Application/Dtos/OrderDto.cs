@@ -61,8 +61,6 @@ namespace AYYUAZ.APP.Application.Dtos
         public OrderStatus Status { get; set; }
         public DateTime? AcceptedAt { get; set; }
         public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
-
-
     }
 
 }

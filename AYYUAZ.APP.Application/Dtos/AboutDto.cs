@@ -27,7 +27,6 @@ namespace AYYUAZ.APP.Application.Dtos
 
     public class UpdateAboutDto
     {
-        public int Id { get; set; }
         
         [Required]
         [StringLength(200)]

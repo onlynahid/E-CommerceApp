@@ -20,7 +20,6 @@ namespace AYYUAZ.APP.Application.Services
             _categoryRepository = categoryRepository;
             _fileStorageService = fileStorageService;
         }
-
         public async Task<CategoryDto> GetCategoryByIdAsync(int categoryId)
         {
             var category = await _categoryRepository.GetByIdAsync(categoryId);
@@ -132,25 +131,21 @@ namespace AYYUAZ.APP.Application.Services
             var categories = await _categoryRepository.GetAllWithProductsAsync();
             return categories.Select(MapToDto);
         }
-
         public async Task<CategoryDto> GetCategoryWithProductsAsync(int categoryId)
         {
             var category = await _categoryRepository.GetByIdWithProductsAsync(categoryId);
             return category != null ? MapToDto(category) : throw new KeyNotFoundException("Category Not Found");
         }
-
         public async Task<bool> IsCategoryNameUniqueAsync(string categoryName)
         {
             var exists = await _categoryRepository.ExistsByNameAsync(categoryName);
             return !exists;
         }
-
         public async Task<bool> IsCategoryNameUniqueAsync(string categoryName, int excludeId)
         {
             var exists = await _categoryRepository.ExistsByNameExcludingIdAsync(categoryName, excludeId);
             return !exists;
         }
-
         public async Task<IEnumerable<CategoryDto>> SearchCategoriesByNameAsync(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))

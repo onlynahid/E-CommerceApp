@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AYYUAZ.APP.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,6 +20,28 @@ namespace AYYUAZ.APP.Application.Dtos
         public string CategoryName { get; set; }
         public string ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<string>? AgeGroups { get; set; }
+        public List<string>? Materials { get; set; }
+        public List<string>? Size { get; set; }
+        public List<string>? Colors { get; set; }
+        public decimal FinalPrice { get; set; }
+        public decimal DiscountPercantage { get; set; }
+
+        //public decimal? DiscountPercentage { get; set; }
+        //public decimal FinalPrice => DiscountPercentage.HasValue ? Price - (Price * DiscountPercentage.Value / 100m) : Price;
+        //public Discount Discount { get; set; }
+        //public decimal FinalPrice
+        //{
+        //    get
+        //    {
+        //        if (Discount != null && Discount.Percentage.HasValue)
+        //        {
+        //            var discountamount = (Price * Discount.Percentage.Value) / 100;
+        //            return Price - discountamount;
+        //        }
+        //        return Price;
+        //    }
+        //}
     }
     public class CreateProductDto
     {
@@ -34,10 +57,15 @@ namespace AYYUAZ.APP.Application.Dtos
         public int CategoryId { get; set; }
         [Required]
         public IFormFile? Image { get; set; }
+        public List<string>? AgeGroups { get; set; }
+        public List<string>? Materials { get; set; }
+        public List<string>? Size { get; set; }
+        public List<string>? Colors { get; set; }
+        public decimal? DiscountPercentage { get; set; }
+
     }
     public class UpdateProductDto
     {
-        public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
@@ -46,6 +74,10 @@ namespace AYYUAZ.APP.Application.Dtos
         public int? Stock { get; set; }
         public int CategoryId { get; set; }
         public IFormFile? Image { get; set; }
+        public List<string>? AgeGroups { get; set; }
+        public List<string>? Materials { get; set; }
+        public List<string>? Size { get; set; }
+        public List<string>? Colors { get; set; }
     }
     public class ProductGetDto
     {
@@ -55,6 +87,19 @@ namespace AYYUAZ.APP.Application.Dtos
         public decimal Price { get; set; }
         public string ImageUrl { get; set; }
         public int? Stock { get; set; }
+        public List<string>? AgeGroups { get; set; }
+        public List<string>? Materials { get; set; }
+        public List<string>? Size { get; set; }
+        public List<string>? Colors { get; set; }
+    }
+    public class ProductFilterDto
+    {
+        public List<string>?AgeGroups { get; set; }
+        public List<string>?Materials{ get; set; }
+        public List<string>?Size { get; set; }
+        public List<string>? Colors { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public decimal? MinPrice { get; set; }
     }
 
 }

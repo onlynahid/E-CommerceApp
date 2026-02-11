@@ -7,37 +7,16 @@ using AYYUAZ.APP.Application.Dtos;
 
 namespace AYYUAZ.APP.Application.Interfaces
 {
-    public interface ISettingsService
+    public interface ISettingsService 
     {
-        // Basic CRUD operations
         Task<IEnumerable<SettingsDto>> GetAllSettingsAsync();
         Task<SettingsDto> GetSettingsByIdAsync(int settingsId);
         Task<SettingsDto> CreateSettingsAsync(CreateSettingsDto createSettingsDto);
         Task<SettingsDto> UpdateSettingsAsync(UpdateSettingsDto updateSettingsDto);
         Task<bool> DeleteSettingsAsync(int settingsId);
-
-        // Settings specific operations
-        Task<SettingsDto> GetCurrentSettingsAsync();
-        Task<SettingsDto> GetDefaultSettingsAsync();
         Task<bool> UpdateCurrentSettingsAsync(UpdateSettingsDto updateSettingsDto);
-        
-        // Contact information
-        Task<string> GetContactPhoneAsync();
-        Task<string> GetContactEmailAsync();
-        Task<string> GetContactAddressAsync();
-        
-        // Social media
         Task<Dictionary<string, string>> GetSocialMediaLinksAsync();
         Task<bool> UpdateSocialMediaLinksAsync(Dictionary<string, string> socialLinks);
-        
-        // Validation
         Task<bool> ValidateSettingsAsync(SettingsDto settings);
-        Task<bool> IsEmailUniqueAsync(string email);
-        Task<bool> IsEmailUniqueAsync(string email, int excludeId);
-        
-        // System settings
-        Task<bool> ResetToDefaultSettingsAsync();
-        Task<bool> BackupCurrentSettingsAsync();
-        Task<bool> RestoreSettingsFromBackupAsync();
     }
 }

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace AYYUAZ.APP.Application.Interfaces
 {
-    public interface IBasketService
-    {   
-        Task<List<BasketItemDto>> GetBasketItemsAsync();
-        Task AddToBasketAsync(int productId);
-        Task Increase(int productid);
-        Task Decrase(int productid);
-        Task RemoveFromBasketAsync( int productId);
-        Task Clear();
-    }
+    //public interface IBasketService 
+    //{   
+    //    Task<List<BasketItemDto>> GetBasketItemsAsync();
+    //    Task AddToBasketAsync(int productId);
+    //    Task Increase(int productid);
+    //    Task Decrase(int productid);
+    //    Task RemoveFromBasketAsync( int productId);
+    //    Task Clear();
+    //}
 }

@@ -14,25 +14,14 @@ namespace AYYUAZ.APP.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        private readonly IBasketService _basketService;
+        //private readonly IBasketService _basketService;
         private readonly AppDbContext _context;
-
-        public OrderController(IOrderService orderService, IBasketService basketService, AppDbContext context)
+        public OrderController(IOrderService orderService,/* IBasketService basketService*/ AppDbContext context)
         {
             _orderService = orderService;
-            _basketService = basketService;
             _context = context;
 
         }
-
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders()
-        {
-            var orders = await _orderService.GetAllOrdersAsync();
-            return Ok(orders);
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDto>> GetOrderById(int id)
         {
@@ -61,7 +50,6 @@ namespace AYYUAZ.APP.Controllers
         //        return BadRequest(new { message = ex.Message });
         //    }
         //}
-
         [HttpPut("{id}")]
         public async Task<ActionResult<OrderDto>> UpdateOrder(int id, [FromBody] UpdateOrderDto updateOrderDto)
         {
@@ -74,22 +62,13 @@ namespace AYYUAZ.APP.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            try
-            {
                 var order = await _orderService.UpdateOrderAsync(updateOrderDto);
                 if (order == null)
                 {
                     return NotFound($"Order with ID {id} not found.");
                 }
                 return Ok(order);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
         }
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteOrder(int id)
         {
@@ -100,82 +79,46 @@ namespace AYYUAZ.APP.Controllers
             }
             return NoContent();
         }
-        [HttpPost("{id}/reject")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<OrderDto>> RejectOrder(int id, [FromBody] string rejectedReason = null)
-        {
-            try
-            {
-                var order = await _orderService.RejectedOrderAsync(id, rejectedReason);
-                if (order == null)
-                {
-                    return NotFound($"Order with ID {id} not found.");
-                }
-                return Ok(order);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-        [HttpPost("{id}/accept")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<OrderDto>> AcceptOrder(int id)
-        {
-            var order = await _orderService.AcceptedOrderAsync(id);
-            if (order == null)
-            {
-                return NotFound($"Order with ID {id} not found.");
-            }
-            return Ok(order);
-        }
         [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout(CheckOutDto checkOutDto)
+        public async Task<IActionResult> Checkout(CreateOrderDto dto)
         {
-            var basket = await _basketService.GetBasketItemsAsync();
-            if (basket == null || !basket.Any())
-            {
-                return BadRequest("Basket is empty.");
-            }
-            var order = new Order
-            {
-                FullName = checkOutDto.FullName,
-                Address = checkOutDto.Address,
-                Email = checkOutDto.Email,
-                PhoneNumber = checkOutDto.PhoneNumber,
-                Notes = checkOutDto.Notes,
-                CreatedAt = DateTime.UtcNow,
-                OrderItems = new List<OrderItem>()
+           if(dto.OrderItems==null || !dto.OrderItems.Any())
+                return BadRequest("No items in the order.");
 
-            };
-            foreach (var item in basket)
+            decimal total = 0;
+
+            foreach (var item in dto.OrderItems)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
                 if (product == null)
                 {
-                    continue;
+                    return BadRequest($"Product with ID {item.ProductId} not found.");
                 }
-                order.OrderItems.Add(new OrderItem
+                total += product.Price * item.Quantity;
+                if (item.Quantity <= 0)
                 {
-                    ProductId = product.Id,
-                    Quantity = item.Quantity,
-                    UnitPrice = product.Price
-                });
+                    return BadRequest("Quantity must be greater than zero.");
 
-
+                }
             }
+            var order = new Order
+            {
+                FullName = dto.FullName,
+                Email = dto.Email,
+                Address = dto.Address,
+                PhoneNumber = dto.PhoneNumber,
+                Notes = dto.Notes,
+                CreatedAt = DateTime.UtcNow,
+                TotalAmount = total,
+
+            };
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-            await _basketService.Clear();
-
-            return Ok(new { message = "Created Order", orderId = order.Id });
-
-
+            return Ok(new { OrderId = order.Id });
 
         }
-
-
     }
 }
+
 
 

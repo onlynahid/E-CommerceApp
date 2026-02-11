@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AYYUAZ.APP.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6f0866e8138daa9d0c87f6649ccfc323f6115a50")]
 [assembly: System.Reflection.AssemblyProductAttribute("AYYUAZ.APP.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AYYUAZ.APP.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

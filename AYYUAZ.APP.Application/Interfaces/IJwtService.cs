@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace AYYUAZ.APP.Application.Interfaces
 {
-    public interface IJwtService
+    public interface IJwtService 
     {
         string GenerateToken(User user);
         ClaimsPrincipal? ValidateToken(string token);

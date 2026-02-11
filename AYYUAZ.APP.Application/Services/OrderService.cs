@@ -122,7 +122,6 @@ namespace AYYUAZ.APP.Application.Services
             await _orderRepository.AddOrderAsync(order);
             return await GetOrderByIdAsync(order.Id);
         }
-
         public async Task<bool> DeleteOrderAsync(int orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
@@ -132,13 +131,11 @@ namespace AYYUAZ.APP.Application.Services
             await _orderRepository.DeleteOrderAsync(orderId);
             return true;
         }
-
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
             return orders.Select(MapToDto);
         }
-
         public async Task<decimal> GetAverageOrderValueAsync()
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -147,19 +144,16 @@ namespace AYYUAZ.APP.Application.Services
 
             return orders.Average(o => o.TotalAmount);
         }
-
         public async Task<OrderDto> GetOrderByIdAsync(int orderId)
         {
             var order = await _orderRepository.GetOrderByIdAsync(orderId);
             return order == null ? throw new KeyNotFoundException("Not Found OrderId") : MapToDto(order);
         }
-
         public async Task<int> GetOrderCountAsync()
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
             return orders.Count();
         }
-
         public async Task<IEnumerable<OrderDto>> GetOrdersByCustomerAsync(string customerName)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -167,7 +161,6 @@ namespace AYYUAZ.APP.Application.Services
                 .Where(o => o.FullName.Contains(customerName, StringComparison.OrdinalIgnoreCase))
                 .Select(MapToDto);
         }
-
         public async Task<IEnumerable<OrderDto>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -175,7 +168,6 @@ namespace AYYUAZ.APP.Application.Services
                 .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
                 .Select(MapToDto);
         }
-
         public async Task<IEnumerable<OrderDto>> GetOrdersWithItemsAsync()
         {
             var orders = await _orderRepository.GetAllOrdersWithItemsAsync();
@@ -183,7 +175,6 @@ namespace AYYUAZ.APP.Application.Services
                 .Where(o => o.OrderItems != null && o.OrderItems.Any())
                 .Select(MapToDtoWithItems);
         }
-
         public async Task<IEnumerable<OrderDto>> GetOrdersWithPaginationAsync(int page, int pageSize)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -192,13 +183,11 @@ namespace AYYUAZ.APP.Application.Services
                 .Take(pageSize)
                 .Select(MapToDto);
         }
-
         public async Task<OrderDto> GetOrderWithItemsAsync(int orderId)
         {
             var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
             return order == null ? throw new KeyNotFoundException("Not Found Orderid for items") : MapToDtoWithItems(order);
         }
-
         public async Task<IEnumerable<OrderDto>> GetRecentOrdersAsync(int count = 10)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -207,7 +196,6 @@ namespace AYYUAZ.APP.Application.Services
                 .Take(count)
                 .Select(MapToDto);
         }
-
         public async Task<IEnumerable<OrderDto>> SearchOrdersAsync(string searchTerm)
         {
             var orders = await _orderRepository.GetAllOrdersAsync();
@@ -218,7 +206,6 @@ namespace AYYUAZ.APP.Application.Services
                            o.Address.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
                 .Select(MapToDto);
         }
-
         public async Task<OrderDto> UpdateOrderAsync(UpdateOrderDto updateOrderDto)
         {
             var order = await _orderRepository.GetOrderByIdAsync(updateOrderDto.Id);
@@ -234,7 +221,6 @@ namespace AYYUAZ.APP.Application.Services
             await _orderRepository.UpdateOrderAsync(order);
             return MapToDto(order);
         }
-
         private OrderDto MapToDto(Order order)
         {
             return new OrderDto
@@ -254,7 +240,6 @@ namespace AYYUAZ.APP.Application.Services
                 OrderItems = new List<OrderItemDto>()
             };
         }
-
         private OrderDto MapToDtoWithItems(Order order)
         {
             return new OrderDto
@@ -283,7 +268,6 @@ namespace AYYUAZ.APP.Application.Services
                 }).ToList() ?? new List<OrderItemDto>()
             };
         }
-
        
     }
 }

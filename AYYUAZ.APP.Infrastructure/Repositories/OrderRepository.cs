@@ -46,7 +46,10 @@ namespace AYYUAZ.APP.Infrastructure.Repositories
 
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
-            return await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         public async Task UpdateOrderAsync(Order order)
